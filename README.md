@@ -14,6 +14,6 @@
 
 ## 游玩
 
-[打开在线版](https://uo13.github.io/houshi-clan-simulator/)
+[打开在线版](https://uo13.github.io/bainian-mendi-simulator/)
 
 项目为纯前端静态页面，不需要服务器或数据库。科举、官阶、宗法与田庄等制度均经过游戏化处理，并非特定朝代的历史复原。
