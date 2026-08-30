@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#7d1f1f">
+  <meta name="description" content="经营一个跨越数百年的中国古代世家：修身、科举、入仕、联姻、置业、修谱，让门第在王朝兴衰中延续。">
+  <title>百年门第 · 中国古代世家模拟器</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="paper-grain" aria-hidden="true"></div>
+
+  <section id="startOverlay" class="overlay start-overlay">
+    <div class="start-card">
+      <div class="seal" aria-hidden="true">世家</div>
+      <p class="eyebrow">大晟 · 承平十二年</p>
+      <h1>百年门第</h1>
+      <p class="start-lead">你将执掌一族，在田亩、婚盟与朝堂之间延续门楣。一个进士未必能兴家，一次站错队却足以断送三代。</p>
+
+      <div class="start-grid">
+        <label class="field">
+          <span>郡望姓氏</span>
+          <input id="surnameInput" maxlength="2" value="谢" autocomplete="off">
+        </label>
+        <label class="field">
+          <span>开族者名讳</span>
+          <input id="founderInput" maxlength="4" value="知远" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="choice-block">
+        <div class="choice-title"><b>落籍之地</b><small>决定物产、灾患与入仕门路</small></div>
+        <div id="regionChoices" class="choices"></div>
+      </div>
+      <div class="choice-block">
+        <div class="choice-title"><b>开局门第</b><small>决定第一代的家底与人脉</small></div>
+        <div id="originChoices" class="choices"></div>
+      </div>
+      <div class="choice-block">
+        <div class="choice-title"><b>祖训家风</b><small>百年之后，后人仍受它影响</small></div>
+        <div id="preceptChoices" class="choices"></div>
+      </div>
+
+      <button id="startButton" class="btn primary start-button">落籍开宗</button>
+      <button id="resumeButton" class="text-button hidden">续读旧档</button>
+      <p class="fineprint">架空王朝与原创规则。科举、官阶、宗法、田庄等参考中国古代制度后作游戏化处理，并非特定朝代复原。</p>
+    </div>
+  </section>
+
+  <section id="eventOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="eventTitle">
+    <div class="modal event-modal">
+      <p id="eventKicker" class="eyebrow">族中要事</p>
+      <h2 id="eventTitle"></h2>
+      <p id="eventCopy" class="event-copy"></p>
+      <div id="eventOptions" class="event-options"></div>
+    </div>
+  </section>
+
+  <section id="marriageOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="marriageTitle">
+    <div class="modal wide-modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">合两姓之好</p>
+          <h2 id="marriageTitle">议亲名帖</h2>
+        </div>
+        <button class="icon-button" onclick="closeMarriage()" aria-label="关闭">×</button>
+      </div>
+      <div id="marriageOptions" class="marriage-options"></div>
+    </div>
+  </section>
+
+  <section id="policyOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="policyTitle">
+    <div class="modal wide-modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">十年一议</p>
+          <h2 id="policyTitle">宗族定策</h2>
+        </div>
+        <button class="icon-button" onclick="closePolicy()" aria-label="暂缓">×</button>
+      </div>
+      <p class="event-copy">族中财力有限，十年之内只能集中经营一条道路。族策会改变收益、教育、婚配与仕途。</p>
+      <div id="policyOptions" class="policy-options"></div>
+    </div>
+  </section>
+
+  <div id="game" class="game hidden">
+    <header class="masthead">
+      <div class="brand-block">
+        <div class="mini-seal" aria-hidden="true">门第</div>
+        <div>
+          <p id="eraLine" class="eyebrow"></p>
+          <h1 id="familyTitle">百年门第</h1>
+          <p id="familySubtitle" class="subtitle"></p>
+        </div>
+      </div>
+      <div class="year-actions">
+        <button class="btn ghost" onclick="openPolicy()">宗族定策</button>
+        <button class="btn" onclick="advanceYears(1)">过一年</button>
+        <button class="btn primary" onclick="advanceYears(5)">过五年</button>
+      </div>
+    </header>
+
+    <div id="resourceBar" class="resource-bar"></div>
+
+    <nav id="tabs" class="tabs" aria-label="世家事务">
+      <button class="tab active" data-tab="overview">家门总览</button>
+      <button class="tab" data-tab="members">族人教养</button>
+      <button class="tab" data-tab="genealogy">宗族世系</button>
+      <button class="tab" data-tab="career">科举官途</button>
+      <button class="tab" data-tab="marriage">婚姻人脉</button>
+      <button class="tab" data-tab="estate">田庄产业</button>
+      <button class="tab" data-tab="ancestral">宗祠家法</button>
+      <button class="tab" data-tab="chronicle">百年家史</button>
+    </nav>
+
+    <div class="workspace">
+      <main id="mainView" class="main-view"></main>
+      <aside id="sideView" class="side-view"></aside>
+    </div>
+
+    <footer class="footer">
+      <div>
+        <button class="text-button" onclick="exportSave()">导出存档</button>
+        <label class="text-button file-button">导入存档<input type="file" accept="application/json" onchange="importSave(event)"></label>
+        <button class="text-button danger-text" onclick="resetGame()">另开宗族</button>
+      </div>
+      <span>存档仅保存在当前浏览器，也可导出留存。</span>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="game.js" defer></script>
+</body>
+</html>
