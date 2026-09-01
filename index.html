@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#7d1f1f">
   <meta name="description" content="经营一个跨越数百年的中国古代世家：科举任官、官场交际、商队贸易、联姻置业与宗族传承。">
   <title>百年门第 · 中国古代世家模拟器</title>
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body>
   <div class="paper-grain" aria-hidden="true"></div>
@@ -84,6 +84,32 @@
     </div>
   </section>
 
+  <section id="valueOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="valueTitle">
+    <div class="modal value-modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">账房释义</p>
+          <h2 id="valueTitle">数值辞典</h2>
+        </div>
+        <button class="icon-button" onclick="closeValueGuide()" aria-label="关闭">×</button>
+      </div>
+      <div id="valueGuideBody"></div>
+    </div>
+  </section>
+
+  <section id="memberOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="memberDossierTitle">
+    <div class="modal wide-modal dossier-modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">族中人物</p>
+          <h2 id="memberDossierTitle">人物卷宗</h2>
+        </div>
+        <button class="icon-button" onclick="closeMemberDossier()" aria-label="关闭">×</button>
+      </div>
+      <div id="memberDossierBody"></div>
+    </div>
+  </section>
+
   <div id="game" class="game hidden">
     <header class="masthead">
       <div class="brand-block">
@@ -95,6 +121,7 @@
         </div>
       </div>
       <div class="year-actions">
+        <button class="btn ghost" onclick="openValueGuide('score')">数值辞典</button>
         <button class="btn ghost" onclick="openPolicy()">宗族定策</button>
         <button class="btn" onclick="advanceYears(1)">过一年</button>
         <button class="btn primary" onclick="advanceYears(5)">过五年</button>
@@ -105,6 +132,7 @@
 
     <nav id="tabs" class="tabs" aria-label="世家事务">
       <button class="tab active" data-tab="overview">家门总览</button>
+      <button class="tab" data-tab="map">天下舆图</button>
       <button class="tab" data-tab="members">族人教养</button>
       <button class="tab" data-tab="genealogy">宗族世系</button>
       <button class="tab" data-tab="career">科举官途</button>
@@ -130,6 +158,6 @@
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  <script src="game.js?v=3" defer></script>
+  <script src="game.js?v=4" defer></script>
 </body>
 </html>

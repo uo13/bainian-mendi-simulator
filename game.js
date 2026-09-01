@@ -104,6 +104,28 @@ const GENERATION_CHARS=['承','景','允','修','维','绍','克','念','敦','�
 const TRAITS=['聪颖','持重','勤俭','刚直','圆融','善经营','骁勇','仁厚','多病','散漫','好胜','沉静'];
 const CLIMATES={承平:{desc:'四境承平，田价与科名同涨。',exam:.03,promotion:.02,disaster:-.04},党争:{desc:'台谏攻讦频繁，官越高越难独善。',exam:0,promotion:-.02,disaster:0},边患:{desc:'征粮募兵不断，武职与军功有可乘之机。',exam:-.02,promotion:.01,disaster:.05},灾馑:{desc:'水旱相仍，粮价腾贵，最考验家底。',exam:-.03,promotion:-.02,disaster:.12},新政:{desc:'朝廷求才理财，能吏与商户皆有机会。',exam:.02,promotion:.04,disaster:0}};
 
+const VALUE_GUIDES={
+  year:{title:'家历',tag:'时间',desc:'所有生产、成长、科举、任期、婚育、商队与朝局都随年份结算。',uses:['过一年适合精细处理应试、婚配与事件；过五年会在遇到事件时自动停下','乡试、会试按三年一科开放；官员任满三年后才能请调','商队、十年族策与朝局更替都以家历为计时单位'],sources:['右上角“过一年 / 过五年”推进'],tab:'overview'},
+  population:{title:'在籍人口',tag:'宗族',desc:'当前住在本家、需要口粮并可被安排事务的活人总数。出阁或远行状态另算。',uses:['每人每年消耗口粮与家用，人口过多会推高管理成本','人口决定务农、掌家、行医等岗位的建议数量','婚育、分房、继承和大族批量管理都以人口结构为基础'],sources:['婚配生育增加；死亡、出阁与断支减少'],tab:'members'},
+  silver:{title:'现银',tag:'经济',desc:'家门最通用的流动资源，用于教育、应试、产业、交际、婚礼、建设与应急。',uses:['置田、开铺、建作坊、扩宅与修宗族建筑','支付科举盘缠、官场交际、商队本金和地方经营','灾年与随机事件中用银往往能换取更稳妥的结果'],sources:['田租、商铺作坊、官俸、经商、商队、行医与著述'],tab:'estate'},
+  grain:{title:'存粮',tag:'经济',desc:'既是全族口粮，也是灾年安全垫、商队货物和宗族行动成本。',uses:['每年自动供养在籍人口，见底会伤害全族健康','可在粮市按浮动价格买卖，灾馑时价格更高','商路、祭祖、赈济、工程和事件会消耗大量粮食'],sources:['田亩收成、粮市购买与部分事件'],tab:'estate'},
+  fields:{title:'田亩',tag:'产业',desc:'最稳固的世家根基，持续产生粮食和田租，改朝换代也不会因罢官归零。',uses:['每年产生粮食与折银田租','提高族望并支撑更大人口和长期教育','灾害、争田、清丈等事件会直接考验田产'],sources:['置办田地、开荒、水利和部分事件'],tab:'estate'},
+  score:{title:'族望',tag:'门第',desc:'门第的综合评分，不是一种可以花掉的货币。它决定家族从寒门小户到百年公卿的层级。',uses:['田亩、产业、科名、官位、声望、人脉与宗族建筑共同计入','门第层级是长期目标，也代表家族在地方与朝中的分量','高官和进士加分快，但产业、谱系与建筑更不怕政局翻覆'],sources:['经营所有主要子系统都会积累'],tab:'overview'},
+  reputation:{title:'清望',tag:'名声',desc:'乡里与士林对本家的道德评价，能在争讼、灾年、科举与婚盟中发挥作用。',uses:['提高部分事件中的说服、胜诉和安全选择','影响议亲对象的家世与外界对家门的评价','清望过低会削弱门第并触发经营警告'],sources:['赈济、抚民、兴学、行医、著述与正面事件'],tab:'ancestral'},
+  influence:{title:'人脉',tag:'关系',desc:'可调用的地方与官场关系网，连接调任、升迁、商路照应和区域经营。',uses:['提高官员升迁机会并降低部分清丈、争讼风险','官员驻地和区域关系会给对应商队提供照应','可在天下舆图经营乡望、建立会馆，把抽象人脉落到具体地区'],sources:['婚盟、官场交际、地方经营、捐输与事件'],tab:'map'},
+  favor:{title:'圣眷',tag:'朝堂',desc:'本家在皇帝与中枢眼中的受信程度，能推高升迁机会，但在改元和易代时会快速衰减。',uses:['直接参与官员升迁计算','高层京职更容易增长，也最容易卷入党争','它是高风险的政治资本，不能代替田产和清望'],sources:['高官履职、军功、纳粮与朝廷事件'],tab:'career'},
+  learning:{title:'学问',tag:'人物属性',desc:'个人经义、策论与著述能力，是科举和部分文职行动的核心属性。',uses:['达到门槛后才能应更高一级考试，并提高中式概率','高学问族人可任塾师、行医或著述','族学、藏书楼、书卷、家学与兴学族策会提高成长'],sources:['读书、延师、著述、族学与藏书楼'],tab:'career'},
+  management:{title:'治事',tag:'人物属性',desc:'个人处理田庄、家务与政务的能力。',uses:['务农者提高田庄收成，掌家者降低全族口粮损耗','任官后影响政绩与部分事件判断','商队领队的治事可以辅助经营能力'],sources:['务农、掌家、任官与商队历练'],tab:'members'},
+  business:{title:'经营',tag:'人物属性',desc:'个人识货、议价和掌控商路的能力。',uses:['经商者每年带来现银','达到25后才能担任商队领队，数值越高归航成功与厚利机会越高','善经营词条与商队历练会加快成长'],sources:['经商、远行商队与商业事件'],tab:'estate'},
+  martial:{title:'武艺',tag:'人物属性',desc:'个人护庄、从军与乱世自保的能力。',uses:['决定山匪、械斗、征役等事件的胜算','高武艺子弟从军更可能立功，为家门带来族望与圣眷','北地、尚武族策与骁勇词条有利于成长'],sources:['习武、从军与武事事件'],tab:'members'},
+  health:{title:'健康',tag:'人物属性',desc:'个人生存、婚育、远行与任职承压能力。',uses:['低健康会增加死亡风险并降低婚育稳定性','边任、商路、瘟疫和缺粮会损害健康','掌家减耗、行医、充足粮食与义庄能间接保护全族'],sources:['年龄、地区、职业、事件与粮食状况共同改变'],tab:'members'},
+  integrity:{title:'操守',tag:'人物属性',desc:'个人的自持与名节，影响家风、官场风险和家门评价。',uses:['与治事共同塑造可靠的掌家人与官员','清正家风和正面选择有利于官灾与声誉','并非越高越万能：经营、武艺和人脉仍有各自用途'],sources:['读书、祖训、家风与事件选择'],tab:'ancestral'},
+  familyLearning:{title:'家学',tag:'家风',desc:'整个家族的教育传统，会影响科举底蕴、藏书与读书成长。',uses:['与族学、藏书楼共同构成长期教育优势','兴学官员和延师课子可逐步提高','家学强不代表人人都该读书，仍需按才分业'],sources:['祖训、教育、建筑、官员兴学与事件'],tab:'ancestral'},
+  unity:{title:'和族',tag:'家风',desc:'各房对公中与家主的信任程度，关系到婚育、分家、继承与灾年互助。',uses:['过低时争产、离心和断支风险上升','影响婚育概率与家主继承的稳定性','祭祖、谱局、义庄和公平处置可提高'],sources:['祖训、祭祖、宗祠谱局与家事选择'],tab:'ancestral'},
+  enterprise:{title:'营生',tag:'家风',desc:'家族整体经营、治产和接受新财路的能力。',uses:['直接提高田亩产出','支撑商贸、作坊和职业分工的长期效率','置业、务农、经商与商业事件会提高'],sources:['祖训、产业扩张、务农经商与商贸选择'],tab:'estate'},
+  familyMartial:{title:'武备',tag:'家风',desc:'家族整体护庄、团练与从军传统。',uses:['与最强族人的武艺共同决定护庄事件胜算','边患时期可转化为军功和族望','能降低部分兵灾损失，但会占用读书和经营人手'],sources:['祖训、尚武族策、习武、练兵与军功'],tab:'members'}
+};
+
 let state=null;
 let activeTab='overview';
 let startConfig={region:'江南',origin:'寒门塾师',precept:'耕读传家'};
@@ -112,6 +134,14 @@ let marriageCandidates=[];
 let toastTimer=null;
 let memberFilters={generation:'all',age:'all',assignment:'all'};
 let memberPage=1;
+let selectedMapRegion='江南';
+let dossierMemberId=null;
+
+function makeRegionalState(home='中州'){
+  return Object.fromEntries(Object.keys(REGIONS).map(name=>[name,{
+    relations:name===home?28:8,intel:0,hall:false,lastNetworkYear:-99,lastIntelYear:-99
+  }]));
+}
 
 function makeMember(data={}){
   return Object.assign({
@@ -153,14 +183,14 @@ function startGame(){
   const child3=makeMember({name:uniqueFamilyName(surname,2,[child1.name,child2.name]),age:7,birthYear:-6,generation:2,branch:'二房',parentIds:[founderId,spouseId],learning:16,martial:32,management:18,business:15,talent:55,trait:startConfig.precept==='文武并济'?'骁勇':'好胜',assignment:'读书',relation:'次子'});
   const climate='承平';
   state={
-    version:1,surname,region:startConfig.region,origin:startConfig.origin,precept:startConfig.precept,
+    version:2,surname,region:startConfig.region,origin:startConfig.origin,precept:startConfig.precept,
     year:1,headId:founderId,heirId:child1.id,lastPolicyYear:1,policy:'守成',climate,lastClimateYear:1,
     resources:{silver:origin.silver,grain:origin.grain,prestige:origin.prestige,reputation:origin.reputation,influence:origin.influence,favor:origin.officeRank?4:0},
     assets:{fields:origin.fields,shops:origin.shops,workshops:origin.workshops,granaries:1,houses:1,books:origin.books},
     projects:{ancestral:1,academy:startConfig.origin==='寒门塾师'?1:0,library:0,charity:0,genealogy:startConfig.origin==='没落士族'?1:0},
     values:{learning:35+precept.learning,integrity:42+precept.integrity,unity:42+precept.unity,enterprise:30+precept.enterprise,martial:25+precept.martial},
     members:[founder,spouse,child1,child2,child3],dead:[],alliances:[],caravans:[],pendingEvent:null,eventHistory:[],ended:false,
-    market:marketQuote(1,climate,startConfig.region),
+    market:marketQuote(1,climate,startConfig.region),regional:makeRegionalState(startConfig.region),
     lastYearReport:{income:0,expense:0,harvest:0,consumption:0,fieldRent:0,shopIncome:0,tradeIncome:0,salary:0,serviceIncome:0},logs:[]
   };
   if(origin.officeRank)appointOfficial(founder,origin.officeRank,'home');
@@ -180,6 +210,7 @@ function uniqueFamilyName(surname,generation,extra=[]){
 
 function enterGame(){
   $('startOverlay').classList.add('hidden');$('game').classList.remove('hidden');
+  selectedMapRegion=state?.region||'中州';
   if(state.pendingEvent)setTimeout(showPendingEvent,60);
 }
 
@@ -191,11 +222,14 @@ function resumeGame(){
 }
 
 function migrate(data){
-  if(!data||data.version!==1||!Array.isArray(data.members))throw new Error('invalid');
+  if(!data||![1,2].includes(data.version)||!Array.isArray(data.members))throw new Error('invalid');
+  data.version=2;
   data.eventHistory=data.eventHistory||[];data.logs=data.logs||[];data.dead=data.dead||[];data.alliances=data.alliances||[];data.caravans=data.caravans||[];
   data.members=data.members.map(m=>makeMember(m));data.values=Object.assign({learning:40,integrity:45,unity:45,enterprise:35,martial:30},data.values||{});
   data.projects=Object.assign({ancestral:1,academy:0,library:0,charity:0,genealogy:0},data.projects||{});
   data.market=Object.assign(marketQuote(data.year,data.climate,data.region),data.market||{});
+  const regionalDefaults=makeRegionalState(data.region);
+  data.regional=Object.fromEntries(Object.keys(REGIONS).map(name=>[name,Object.assign(regionalDefaults[name],data.regional?.[name]||{})]));
   data.lastYearReport=Object.assign({income:0,expense:0,harvest:0,consumption:0,fieldRent:0,shopIncome:0,tradeIncome:0,salary:0,serviceIncome:0},data.lastYearReport||{});
   data.members.forEach(m=>{
     if(!Array.isArray(m.officeHistory))m.officeHistory=[];
@@ -231,6 +265,58 @@ function marketQuote(year,climate,region){
 
 function refreshMarket(){state.market=marketQuote(state.year,state.climate,state.region)}
 
+function regionProfile(name){
+  if(!state.regional)state.regional=makeRegionalState(state.region);
+  if(!state.regional[name])state.regional[name]=makeRegionalState(state.region)[name];
+  return state.regional[name];
+}
+
+function regionOfficials(name){return residents().filter(m=>m.officeRank&&m.officeRegion===name)}
+function regionCaravans(name){return(state.caravans||[]).filter(c=>c.status==='traveling'&&c.target===name)}
+
+function runRegionalNetwork(){
+  Object.keys(REGIONS).forEach(name=>{
+    const profile=regionProfile(name),officials=regionOfficials(name).length;
+    if(profile.relations>8&&!officials&&!profile.hall)profile.relations=Math.max(8,profile.relations-.18);
+    if(officials)profile.relations=clamp(profile.relations+Math.min(.5,officials*.14),0,100);
+    if(profile.hall&&chance(.2)){addResource('influence',.25);profile.relations=clamp(profile.relations+.08,0,100)}
+  });
+}
+
+function selectMapRegion(name){
+  if(!REGIONS[name])return;
+  selectedMapRegion=name;
+  renderMap();
+}
+
+function regionalAction(type){
+  const name=selectedMapRegion,profile=regionProfile(name),officials=regionOfficials(name).length;
+  if(type==='network'){
+    if(profile.lastNetworkYear===state.year)return toast('本年已在此地经营过乡望');
+    const cost=50+Math.floor(profile.relations*.45);
+    if(!spend({silver:cost}))return toast(`经营乡望需银${cost}两`);
+    const gain=8+officials*2+(name===state.region?3:0);
+    profile.relations=clamp(profile.relations+gain,0,100);profile.lastNetworkYear=state.year;
+    addResource('influence',3+officials);if(name===state.region)addResource('reputation',2);
+    log('good',`${state.surname}氏在${name}设宴访贤、周济乡里，地方关系提高${gain}。`);
+  }else if(type==='intel'){
+    if(profile.intel>=3)return toast('此地商情已经尽数掌握');
+    if(profile.lastIntelYear===state.year)return toast('本年已派人探听过此地商情');
+    const cost=30+profile.intel*24;
+    if(!spend({silver:cost}))return toast(`探听商情需银${cost}两`);
+    profile.intel++;profile.lastIntelYear=state.year;addResource('influence',1);
+    log('normal',`账房派人往${name}查访行价与道路，商情升至第${profile.intel}级。`);
+  }else if(type==='hall'){
+    if(profile.hall)return toast(`${name}会馆已经设立`);
+    if(profile.relations<25&&!officials)return toast('地方关系达到25，或有本族官员在任，方可设立会馆');
+    const cost=260;
+    if(!spend({silver:cost,grain:120}))return toast('设立会馆需银260两、粮120石');
+    profile.hall=true;profile.relations=clamp(profile.relations+12,0,100);addResource('prestige',10);addResource('influence',8);
+    log('important',`${state.surname}氏在${name}设立会馆，今后官员、商队与姻亲皆有落脚之处。`);
+  }
+  save();renderAll();toast(type==='network'?`${name}乡望已经营`:type==='intel'?`${name}商情升至${profile.intel}级`:`${name}会馆落成`);
+}
+
 function caravanTarget(route){return route.target==='home'?state.region:route.target}
 
 function launchCaravan(routeId){
@@ -256,14 +342,16 @@ function resolveCaravan(caravan){
     const salvage=Math.round(caravan.investment*.18);state.resources.silver+=salvage;caravan.status='lost';caravan.result=`领队亡故，仅收回${salvage}两残货`;
     log('bad',`${caravan.leader}领队的${route.name}商队失去主事，只带回${salvage}两残货。`);return;
   }
+  const regional=regionProfile(caravan.target);
   const support=state.members.some(m=>m.alive&&m.officeRank&&m.officeRegion===caravan.target)?(.06+state.resources.influence*.0004):0;
+  const networkSupport=regional.relations*.00055+regional.intel*.018+(regional.hall ? .065 : 0);
   const healer=(caravan.target==='巴蜀'&&residents().some(m=>m.assignment==='行医'&&m.learning>=45))?0.04:0;
   const climateRisk=state.climate==='边患'&&caravan.target==='北地'?.09:state.climate==='灾馑'?.05:0;
-  const success=clamp(.72-route.risk+leader.business*.003+leader.management*.0012+support+healer-climateRisk,.22,.94);
+  const success=clamp(.72-route.risk+leader.business*.003+leader.management*.0012+support+networkSupport+healer-climateRisk,.22,.94);
   const roll=Math.random();let payout=0;
   if(roll<success){
     const windfall=chance(.1+leader.business*.001),skillFactor=.9+leader.business/500;
-    payout=Math.round(caravan.investment*route.returns*skillFactor*(windfall?1.35:1));
+    payout=Math.round(caravan.investment*route.returns*skillFactor*(1+regional.intel*.035+(regional.hall ? .07 : 0))*(windfall?1.35:1));
     caravan.status=windfall?'windfall':'returned';caravan.result=`带回${payout}两`;
     state.resources.silver+=payout;leader.business=clamp(leader.business+route.years*(windfall?2.2:1.2),0,100);leader.management=clamp(leader.management+route.years*.5,0,100);
     addResource('influence',route.years+Math.floor(route.risk*10));addResource('prestige',windfall?6:2);
@@ -365,6 +453,7 @@ function annualTurn(){
   refreshMarket();
   processCaravans();
   runEconomy();
+  runRegionalNetwork();
   ageAndTrain();
   runBirths();
   runOfficials();
@@ -515,8 +604,10 @@ function runOfficials(){
     m.assignment='任官';m.officeYears++;
     const track=OFFICE_TRACKS[m.officeTrack]||OFFICE_TRACKS['外任'];
     const duty=OFFICIAL_DUTIES[m.officeDuty]||OFFICIAL_DUTIES['抚民'];
+    const localNetwork=regionProfile(m.officeRegion||state.region);
     m.officialContacts.forEach(c=>c.bond=clamp(c.bond-(m.lastSocialYear===state.year-1?0.05:0.45),0,100));
-    m.merit+=(1+m.management*.012)*track.merit*duty.merit;
+    m.merit+=(1+m.management*.012)*track.merit*duty.merit+(localNetwork.hall ? .24 : 0);
+    localNetwork.relations=clamp(localNetwork.relations+(m.officeDuty==='抚民'||m.officeDuty==='兴学' ? .22 : .08),0,100);
     if(m.officeDuty==='抚民'){addResource('reputation',.45);if(m.officeTrack==='本籍')state.values.unity=clamp(state.values.unity+.04,0,100)}
     if(m.officeDuty==='催科'){addResource('favor',.38);addResource('reputation',-.18);m.merit+=.45}
     if(m.officeDuty==='兴学'){state.values.learning=clamp(state.values.learning+.1,0,100);addResource('reputation',.35);if(chance(.08))state.assets.books+=1}
@@ -530,7 +621,7 @@ function runOfficials(){
       m.health=clamp(m.health-.35,1,100);
       if(state.climate==='边患'){m.merit+=1.2;if(chance(.16))addResource('prestige',1)}
     }
-    const corruption=(Math.max(0,45-m.integrity)*.0015+(state.climate==='党争'?.015:0))*track.risk*duty.risk;
+    const corruption=(Math.max(0,45-m.integrity)*.0015+(state.climate==='党争' ? .015 : 0))*track.risk*duty.risk*(localNetwork.hall ? .9 : 1);
     if(chance(corruption)){
       const severe=chance(.25+m.officeRank*.02);addResource('reputation',severe?-14:-5);addResource('favor',severe?-9:-3);
       if(severe){log('bad',`${m.name}在${m.officePlace}任上因钱粮不清遭弹劾，官身尽失。`);vacateOffice(m)}
@@ -538,7 +629,7 @@ function runOfficials(){
       return;
     }
     if(m.officeYears>=4&&m.officeRank>1){
-      let p=.035+m.merit*.002+officialNetworkPower(m)*.00065+state.resources.influence*.0007+state.resources.favor*.001+climate.promotion+(state.policy==='入仕'?.045:0);
+      let p=.035+m.merit*.002+officialNetworkPower(m)*.00065+state.resources.influence*.0007+state.resources.favor*.001+localNetwork.relations*.00035+(localNetwork.hall ? .008 : 0)+climate.promotion+(state.policy==='入仕' ? .045 : 0);
       if(m.trait==='圆融')p+=.025;if(m.trait==='刚直'&&state.climate==='党争')p-=.02;
       if(chance(clamp(p,.01,.24))){
         const oldPlace=m.officePlace,nextRank=m.officeRank-1,preference=m.officeTrack==='本籍'?'home':'auto';
@@ -988,18 +1079,18 @@ function renderAll(){
   $('familyTitle').textContent=`${state.region} · ${state.surname}氏门第`;
   $('familySubtitle').textContent=`${state.origin}起家 · 祖训“${state.precept}” · ${currentRank().name}`;
   renderResources();
-  const renderers={overview:renderOverview,members:renderMembers,genealogy:renderGenealogy,career:renderCareer,marriage:renderMarriageTab,estate:renderEstate,ancestral:renderAncestral,chronicle:renderChronicle};
+  const renderers={overview:renderOverview,map:renderMap,members:renderMembers,genealogy:renderGenealogy,career:renderCareer,marriage:renderMarriageTab,estate:renderEstate,ancestral:renderAncestral,chronicle:renderChronicle};
   (renderers[activeTab]||renderOverview)();renderSide();
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===activeTab));
 }
 
 function renderResources(){
   const r=state.resources,items=[
-    ['家历',`第${state.year}年`,false],['在籍人口',`${residents().length}人`,residents().length<2],['现银',`${fmt(r.silver)}两`,r.silver<30],
-    ['存粮',`${fmt(r.grain)}石`,r.grain<residents().length*18],['田亩',`${fmt(state.assets.fields)}亩`,false],['族望',fmt(familyScore()),false],
-    ['清望',fmt(r.reputation),r.reputation<5],['人脉',fmt(r.influence),false],['圣眷',fmt(r.favor),false]
+    ['year','家历',`第${state.year}年`,false],['population','在籍人口',`${residents().length}人`,residents().length<2],['silver','现银',`${fmt(r.silver)}两`,r.silver<30],
+    ['grain','存粮',`${fmt(r.grain)}石`,r.grain<residents().length*18],['fields','田亩',`${fmt(state.assets.fields)}亩`,false],['score','族望',fmt(familyScore()),false],
+    ['reputation','清望',fmt(r.reputation),r.reputation<5],['influence','人脉',fmt(r.influence),false],['favor','圣眷',fmt(r.favor),false]
   ];
-  $('resourceBar').innerHTML=items.map(x=>`<div class="resource ${x[2]?'danger':''}"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+  $('resourceBar').innerHTML=items.map(x=>`<button class="resource ${x[3]?'danger':''}" onclick="openValueGuide('${x[0]}')" aria-label="查看${x[1]}用途"><span>${x[1]} <i>?</i></span><b>${x[2]}</b></button>`).join('');
 }
 
 function renderOverview(){
@@ -1009,14 +1100,52 @@ function renderOverview(){
     <div class="section-head"><div><h2>家门总览</h2><p>世家的根基不只是一张官帖。田庄供养读书，婚盟托举仕途，清望又在灾年保住人心。</p></div><div class="section-actions"><button class="btn small" onclick="familyAction('school')">延师课子</button><button class="btn small jade" onclick="familyAction('rite')">合族祭祖</button></div></div>
     <div class="hero-grid">
       <section class="family-rank" data-mark="${esc(state.surname)}"><span class="rank-label">当前门第</span><div class="rank-name">${rank.name}</div><p class="rank-copy">${rank.copy}</p><div class="rank-progress"><span>${score}</span><div class="bar gold"><i style="width:${next?clamp((score-rank.score)/(next.score-rank.score)*100,2,100):100}%"></i></div><span>${next?`${next.name} ${next.score}`:'门第已极'}</span></div></section>
-      <section class="patriarch-card"><div><span class="rank-label">本代家主</span><h3>${h?esc(h.name):'宗房无人'}</h3><p>${h?`${h.age}岁 · ${h.exam}${h.officeRank?` · ${OFFICES[h.officeRank]}`:''}<br>${esc(h.trait)} · ${esc(h.assignment)}`:'族中尚未推举新主'}</p></div><div class="patriarch-stats"><div class="tiny-stat"><b>${h?Math.floor(h.learning):'-'}</b><span>学问</span></div><div class="tiny-stat"><b>${h?Math.floor(h.management):'-'}</b><span>治事</span></div><div class="tiny-stat"><b>${h?Math.floor(h.integrity):'-'}</b><span>操守</span></div></div></section>
+      <section class="patriarch-card portrait-patriarch">${h?`<button class="portrait-button patriarch-portrait" onclick="openMemberDossier(${h.id})" aria-label="查看${esc(h.name)}人物卷宗">${portraitSvg(h)}</button>`:''}<div class="patriarch-copy"><span class="rank-label">本代家主</span><h3>${h?`<button class="name-link" onclick="openMemberDossier(${h.id})">${esc(h.name)}</button>`:'宗房无人'}</h3><p>${h?`${h.age}岁 · ${h.exam}${h.officeRank?` · ${OFFICES[h.officeRank]}`:''}<br>${esc(h.trait)} · ${esc(h.assignment)}`:'族中尚未推举新主'}</p><div class="patriarch-stats"><button class="tiny-stat" onclick="openValueGuide('learning',${h?.id||0})"><b>${h?Math.floor(h.learning):'-'}</b><span>学问</span></button><button class="tiny-stat" onclick="openValueGuide('management',${h?.id||0})"><b>${h?Math.floor(h.management):'-'}</b><span>治事</span></button><button class="tiny-stat" onclick="openValueGuide('integrity',${h?.id||0})"><b>${h?Math.floor(h.integrity):'-'}</b><span>操守</span></button></div></div></section>
     </div>
+    <section class="system-hooks"><div class="hook-title"><span>门第诸务</span><small>每一项数值都有去处，点击直接进入对应系统</small></div><div>${systemHooks()}</div></section>
     <div class="panel-grid">
       <section class="panel"><h3>立族长志</h3><ul class="goal-list">${goals.map(g=>`<li class="${g.done?'done':''}">${g.text}</li>`).join('')}</ul></section>
       <section class="panel"><h3>去年账略</h3><ul class="plain-list"><li class="row-between"><span>田庄收成</span><b>${fmt(report.harvest)}石</b></li><li class="row-between"><span>全年口粮</span><b>－${fmt(report.consumption)}石</b></li><li class="row-between"><span>产业与俸禄</span><b>${fmt(report.income)}两</b></li><li class="row-between"><span>家用与束脩</span><b>－${fmt(report.expense)}两</b></li></ul><p class="panel-copy">账面丰厚不等于安全：改朝换代时，官位可能归零，只有田亩、宗族和清望能留下。</p></section>
       <section class="panel"><h3>近年家事</h3>${renderMiniLogs(5)}</section>
       <section class="panel"><h3>朝局与地方</h3><p class="panel-copy"><b class="red">${state.climate}</b>　${CLIMATES[state.climate].desc}<br><br><b>${state.region}</b>　${REGIONS[state.region].desc}<br><br>本轮族策：<b class="jade-text">${state.policy}</b>，尚余约${Math.max(0,10-(state.year-state.lastPolicyYear))}年再议。</p></section>
     </div>`;
+}
+
+function systemHooks(){
+  const examReady=residents().filter(m=>m.sex==='男'&&m.bornInFamily&&nextExam(m)&&examStatus(m)===`可应${nextExam(m).name}`).length;
+  const unassigned=residents().filter(m=>m.age>=16&&!m.officeRank&&!m.onCaravan&&m.assignment==='闲居').length;
+  const halls=Object.values(state.regional||{}).filter(x=>x.hall).length,active=(state.caravans||[]).filter(c=>c.status==='traveling').length;
+  const hooks=[
+    ['产业账房',`${fmt(state.resources.silver)}两现银 · ${fmt(state.resources.grain)}石粮`,`粮市、置业与商队`,"estate"],
+    ['族人分业',unassigned?`${unassigned}名成年族人闲居`:`${residents().length}人在籍`,`按才安排真实产出`,"members"],
+    ['科举官途',examReady?`${examReady}人本年可应试`:`${residents().filter(m=>m.assignment==='读书').length}名读书人`,`科名、任地与官场关系`,"career"],
+    ['天下舆图',`${halls}处会馆 · ${active}支商队`,`经营区域人脉与商情`,"map"]
+  ];
+  return hooks.map(([name,value,copy,tab])=>`<button class="system-hook" onclick="switchTab('${tab}')"><span>${name}</span><b>${value}</b><small>${copy}</small><i>进入</i></button>`).join('');
+}
+
+function renderMap(){
+  if(!REGIONS[selectedMapRegion])selectedMapRegion=state.region;
+  const layout=[
+    {name:'北地',path:'M320 50 Q410 18 520 58 L575 150 L493 205 L354 177 L278 113Z',x:423,y:112},
+    {name:'中州',path:'M297 157 L354 177 L493 205 L514 300 L393 342 L280 282 L241 217Z',x:381,y:246},
+    {name:'巴蜀',path:'M120 216 L241 217 L280 282 L246 392 L117 372 L61 292Z',x:174,y:292},
+    {name:'江南',path:'M393 342 L514 300 L657 333 L695 418 L575 478 L436 443Z',x:533,y:386},
+    {name:'岭南',path:'M246 392 L393 342 L436 443 L368 505 L229 486 L178 432Z',x:326,y:428}
+  ];
+  const profile=regionProfile(selectedMapRegion),region=REGIONS[selectedMapRegion],officials=regionOfficials(selectedMapRegion),caravans=regionCaravans(selectedMapRegion),quote=marketQuote(state.year,state.climate,selectedMapRegion);
+  const networkCost=50+Math.floor(profile.relations*.45),networkDone=profile.lastNetworkYear===state.year,intelCost=30+profile.intel*24,intelDone=profile.lastIntelYear===state.year;
+  const tradeLines=layout.filter(x=>x.name!==state.region).map(x=>{
+    const start=layout.find(n=>n.name===state.region),active=regionCaravans(x.name).length||regionProfile(x.name).hall;
+    return`<path class="trade-line ${active?'active':''}" d="M${start.x} ${start.y} Q${(start.x+x.x)/2} ${Math.min(start.y,x.y)-45} ${x.x} ${x.y}"/>`;
+  }).join('');
+  const nodes=layout.map(node=>{
+    const p=regionProfile(node.name),oc=regionOfficials(node.name).length,cc=regionCaravans(node.name).length,selected=node.name===selectedMapRegion,home=node.name===state.region;
+    return`<g class="map-region ${selected?'selected':''} ${home?'home':''}" role="button" tabindex="0" onclick="selectMapRegion('${node.name}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectMapRegion('${node.name}')}" aria-label="查看${node.name}"><path class="map-land" d="${node.path}"/><circle class="map-node" cx="${node.x}" cy="${node.y}" r="27"/><path class="map-roof" d="M${node.x-18} ${node.y-2} L${node.x} ${node.y-18} L${node.x+18} ${node.y-2} M${node.x-13} ${node.y-2} V${node.y+14} H${node.x+13} V${node.y-2}"/><text class="map-label" x="${node.x}" y="${node.y+48}" text-anchor="middle">${node.name}</text><text class="map-small" x="${node.x}" y="${node.y+64}" text-anchor="middle">关系 ${Math.floor(p.relations)}${p.hall?' · 会馆':''}</text>${home?`<text class="map-home" x="${node.x+33}" y="${node.y-22}">本籍</text>`:''}${oc?`<g class="map-counter official" transform="translate(${node.x+28} ${node.y+10})"><circle r="12"/><text y="4" text-anchor="middle">官${oc}</text></g>`:''}${cc?`<g class="map-counter caravan" transform="translate(${node.x-30} ${node.y+12})"><circle r="12"/><text y="4" text-anchor="middle">商${cc}</text></g>`:''}</g>`;
+  }).join('');
+  const officialList=officials.length?officials.map(m=>`<button class="map-person" onclick="openMemberDossier(${m.id})"><span>${portraitSvg(m)}</span><b>${esc(m.name)}</b><small>${esc(m.officePlace)} · ${esc(OFFICES[m.officeRank])}</small></button>`).join(''):'<p class="map-empty">此地暂无本族官员，调任或新授官职后会显示在舆图。</p>';
+  const caravanList=caravans.length?caravans.map(c=>`<div class="map-caravan"><b>${esc(CARAVAN_ROUTES[c.routeId]?.name||'商队')}</b><span>${esc(c.leader)}领队 · 家历${c.dueYear}年归</span></div>`).join(''):'<p class="map-empty">此地暂无在途商队。商情与会馆仍会保留，等待下次远行。</p>';
+  $('mainView').innerHTML=`<div class="section-head map-section-head"><div><h2>天下舆图</h2><p>官员任地、商队路线与地方关系不再是三张孤立表格。点击郡域，直接经营本族在当地的根脚。</p></div><div class="map-legend"><span><i class="legend-home"></i>本籍</span><span><i class="legend-official"></i>在任</span><span><i class="legend-caravan"></i>商队</span></div></div><div class="map-layout"><section class="world-map"><svg viewBox="0 0 760 540" aria-label="大晟五地互动舆图"><rect class="map-paper" width="760" height="540" rx="12"/><path class="map-mountain" d="M55 82 l38 -52 l31 42 l25 -31 l38 56 M610 92 l36 -47 l28 34 l29 -36 l31 51"/><path class="map-river" d="M558 35 C487 123 583 190 504 254 S409 316 401 386 S352 480 281 529"/>${tradeLines}${nodes}<g class="map-compass" transform="translate(685 470)"><circle r="34"/><path d="M0-26 L8-4 L0 26 L-8-4Z"/><text x="0" y="-39" text-anchor="middle">北</text></g></svg><div class="map-caption"><span>天下五地</span><b>${state.climate}</b><small>${CLIMATES[state.climate].desc}</small></div></section><aside class="region-scroll"><div class="region-heading"><span class="guide-tag">${selectedMapRegion===state.region?'本籍':'异地'}</span><h3>${selectedMapRegion}</h3><p>${region.desc}</p></div><div class="region-metrics"><button onclick="openValueGuide('influence')"><span>地方关系</span><b>${Math.floor(profile.relations)}</b></button><div><span>商情</span><b>${profile.intel}/3</b></div><div><span>粮价</span><b>${quote.sellPer100}/${quote.buyPer100}</b></div><div><span>会馆</span><b>${profile.hall?'已设':'未设'}</b></div></div><div class="region-bonuses"><span>田产 ×${region.yield.toFixed(2)}</span><span>商贸 ×${region.trade.toFixed(2)}</span><span>读书 ×${region.study.toFixed(2)}</span><span>康健 ×${region.health.toFixed(2)}</span></div><section class="region-people"><h4>本族在任 · ${officials.length}</h4><div>${officialList}</div></section><section><h4>在途商队 · ${caravans.length}</h4>${caravanList}</section><div class="region-actions"><button class="btn jade" ${networkDone?'disabled':''} onclick="regionalAction('network')">${networkDone?'本年乡望已经营':`经营乡望 · ${networkCost}两`}</button><button class="btn gold" ${intelDone||profile.intel>=3?'disabled':''} onclick="regionalAction('intel')">${profile.intel>=3?'商情已尽知':intelDone?'本年已探商情':`探听商情 · ${intelCost}两`}</button><button class="btn primary" ${profile.hall?'disabled':''} onclick="regionalAction('hall')">${profile.hall?'会馆已立':'设立会馆 · 260两＋120石'}</button><small>每级商情提高商队成功约1.8%、利润3.5%；会馆再提高成功6.5%、利润7%。设馆需地方关系25或本族官员在任。</small></div></aside></div>`;
 }
 
 function goalList(){
@@ -1044,6 +1173,61 @@ function roleLabel(m){
   if(m.officeRank)return OFFICES[m.officeRank];if(m.onCaravan)return'商队领队';if(m.exam!=='白身')return m.honor||m.exam;if(!m.bornInFamily)return m.relation;return m.assignment;
 }
 
+function switchTab(tab){
+  if(!['overview','map','members','genealogy','career','marriage','estate','ancestral','chronicle'].includes(tab))tab='overview';
+  activeTab=tab;renderAll();
+  requestAnimationFrame(()=>$('mainView')?.scrollIntoView({behavior:'smooth',block:'start'}));
+}
+
+function guideCurrentValue(key,memberId=0){
+  const m=memberId?getMember(memberId):null,r=state.resources;
+  const values={year:`第${state.year}年`,population:`${residents().length}人`,silver:`${fmt(r.silver)}两`,grain:`${fmt(r.grain)}石`,fields:`${fmt(state.assets.fields)}亩`,score:fmt(familyScore()),reputation:fmt(r.reputation),influence:fmt(r.influence),favor:fmt(r.favor),learning:m?Math.floor(m.learning):Math.floor(state.values.learning),management:m?Math.floor(m.management):'人物属性',business:m?Math.floor(m.business):'人物属性',martial:m?Math.floor(m.martial):Math.floor(state.values.martial),health:m?Math.floor(m.health):'人物属性',integrity:m?Math.floor(m.integrity):Math.floor(state.values.integrity),familyLearning:Math.floor(state.values.learning),unity:Math.floor(state.values.unity),enterprise:Math.floor(state.values.enterprise),familyMartial:Math.floor(state.values.martial)};
+  return values[key]??'—';
+}
+
+function openValueGuide(key='score',memberId=0){
+  const guide=VALUE_GUIDES[key]||VALUE_GUIDES.score,member=memberId?getMember(memberId):null;
+  $('valueTitle').textContent=guide.title;
+  $('valueGuideBody').innerHTML=`<div class="value-summary"><div><span class="guide-tag">${esc(guide.tag)}</span><b>${esc(guideCurrentValue(key,memberId))}</b>${member?`<small>${esc(member.name)}的当前数值</small>`:''}</div><p>${esc(guide.desc)}</p></div><div class="guide-columns"><section><h3>现在能做什么</h3><ul>${guide.uses.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section><section><h3>主要怎么获得</h3><ul>${guide.sources.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></section></div><div class="value-guide-actions"><button class="btn primary" onclick="closeValueGuide();switchTab('${guide.tab}')">前往相关系统</button></div><div class="value-index"><b>继续查阅</b><div>${Object.entries(VALUE_GUIDES).map(([id,v])=>`<button class="value-index-button ${id===key?'on':''}" onclick="openValueGuide('${id}')">${esc(v.title)}</button>`).join('')}</div></div>`;
+  $('valueOverlay').classList.remove('hidden');
+}
+
+function closeValueGuide(){$('valueOverlay').classList.add('hidden')}
+
+function portraitSvg(m,large=false){
+  if(m.relation==='开族之祖')return`<img class="portrait-art ${large?'large':''}" src="assets/portraits/founder-patriarch.webp" alt="${esc(m.name)}开族者半身立绘" decoding="async">`;
+  const seed=String(m.id||m.name).split('').reduce((n,c)=>(n*31+c.charCodeAt(0))>>>0,17);
+  const robes=['#465f59','#7b3c32','#50617a','#6f573d','#4f6a47','#73586a'],accents=['#b78b45','#9d4d3f','#496d65','#c0a165'];
+  const robe=robes[seed%robes.length],accent=accents[(seed>>3)%accents.length],paper=['#e9dfc8','#dce3d4','#e2d7ca'][seed%3];
+  const official=m.officeRank,scholar=EXAM_ORDER.indexOf(m.exam)>=2||m.assignment==='读书'||m.assignment==='著述',merchant=m.assignment==='经商'||m.onCaravan,warrior=m.assignment==='习武'||m.martial>=65;
+  const gray=m.age>=58?'#8d887e':'#201d1a',female=m.sex==='女';
+  const face=m.age<12?'#e8cdb2':'#d9b596';
+  const hair=female?`<path d="M77 111 Q82 46 120 39 Q158 45 164 112 L151 94 Q149 154 120 160 Q89 153 87 94Z" fill="${gray}"/><ellipse cx="151" cy="51" rx="18" ry="14" fill="${gray}"/><path d="M148 37 l7 -13 l6 14" fill="none" stroke="${accent}" stroke-width="4"/><circle cx="162" cy="37" r="4" fill="${accent}"/>`:`<path d="M81 105 Q81 50 120 40 Q159 49 159 105 L146 83 Q119 70 92 84Z" fill="${gray}"/>`;
+  const hat=official?`<path d="M76 57 Q120 38 164 57 L158 73 L82 73Z" fill="#24201c"/><rect x="103" y="31" width="34" height="27" rx="4" fill="#29241f"/><path d="M76 58 L48 49 M164 58 L192 49" stroke="#29241f" stroke-width="8"/>`:'';
+  const accessory=merchant?`<g transform="translate(151 210)"><rect x="0" y="0" width="48" height="34" rx="3" fill="#b99458" stroke="#593e27"/><path d="M7 8h34M7 17h34M7 26h34M15 5v25M28 5v25" stroke="#6c492b" stroke-width="2"/></g>`:warrior?`<path d="M175 266 L205 141" stroke="#62462f" stroke-width="8"/><path d="M198 150 l14 6 l-20 14" fill="${accent}"/>`:scholar?`<g transform="translate(148 219) rotate(-8)"><rect width="55" height="43" fill="#e8dec8" stroke="#77654e"/><path d="M27 3v37M7 12h14M34 12h14M7 21h14M34 21h14" stroke="#8e3d34" stroke-width="2"/></g>`:'';
+  const ageLines=m.age>=45?'<path d="M95 121 q8 4 14 0 M132 121 q8 4 14 0 M113 147 q7 3 14 0" stroke="#996f59" stroke-width="1.4" fill="none" opacity=".72"/>':'';
+  const ornament=female&&!official?`<path d="M80 73 q40 -29 80 0" fill="none" stroke="${accent}" stroke-width="4"/><circle cx="82" cy="72" r="5" fill="${accent}"/>`:'';
+  return`<svg class="portrait-art ${large?'large':''}" viewBox="0 0 240 300" role="img" aria-label="${esc(m.name)}半身立绘"><rect width="240" height="300" fill="${paper}"/><circle cx="183" cy="62" r="32" fill="#c8ad77" opacity=".3"/><path d="M0 116 Q38 79 78 113 T160 108 T240 93 V190 H0Z" fill="#6d7968" opacity=".16"/><path d="M0 146 Q45 112 96 146 T190 133 T240 144" fill="none" stroke="#54645b" stroke-width="3" opacity=".3"/><path d="M24 300 Q34 205 82 186 Q120 172 158 187 Q207 208 218 300Z" fill="${robe}"/><path d="M86 187 L120 232 L154 187 Q140 173 120 172 Q100 174 86 187Z" fill="#f0e4cf"/><path d="M113 158 h14 v28 h-14z" fill="${face}"/><ellipse cx="120" cy="112" rx="39" ry="52" fill="${face}"/>${hair}${hat}${ornament}<path d="M94 108 q9 -6 18 0 M129 108 q9 -6 18 0" stroke="#352b25" stroke-width="3" fill="none"/><circle cx="105" cy="111" r="2.5" fill="#29221f"/><circle cx="137" cy="111" r="2.5" fill="#29221f"/><path d="M116 126 q4 3 8 0 M107 143 q13 8 27 0" stroke="#85594a" stroke-width="2" fill="none"/>${ageLines}<path d="M120 232 L120 300 M91 193 Q106 212 120 232 Q135 210 151 193" stroke="${accent}" stroke-width="5" fill="none"/>${accessory}<rect x="11" y="245" width="24" height="43" fill="none" stroke="#8a2824" stroke-width="2"/><text x="23" y="260" text-anchor="middle" font-size="10" fill="#8a2824" writing-mode="tb">${esc(state.surname)}氏</text></svg>`;
+}
+
+function memberContribution(m){
+  if(m.officeRank){const duty=OFFICIAL_DUTIES[m.officeDuty],salary=Math.round(OFFICE_SALARY[m.officeRank]*(OFFICE_TRACKS[m.officeTrack]?.salary||1));return`${m.officePlace}任${OFFICES[m.officeRank]}，每年约入俸${salary}两；主办“${m.officeDuty}”，${duty?.desc||'积累任上考成'}。`}
+  if(m.onCaravan)return`正领商队前往${esc((state.caravans||[]).find(c=>c.id===m.caravanId)?.target||'外地')}，经营与治事共同影响归航结果。`;
+  const map={读书:`每年增长学问；${m.age>22&&m.learning>=50?'同时可授徒补贴家用':'达到考试门槛后可应试'}。`,习武:'每年增长武艺，为护庄、征役与军功事件提供主力。',务农:`每年为田庄额外贡献约${Math.floor(4+m.management*.05)}石收成，并提高治事。`,经商:`每年约入银${Math.floor(4+m.business*.14)}两；经营达到25可领商队。`,掌家:`以治事降低全族口粮损耗，当前个人可提供约${(m.management*.08).toFixed(1)}%的管理权重。`,行医:'每年获得少量诊金、改善自身健康，并有机会增加清望。',著述:'学问达到55后可著书立说，增加藏书与清望。',闲居:'目前没有稳定产出，可根据天资安排读书、务农、经商、掌家、习武、行医或著述。'};
+  return map[m.assignment]||'当前事务尚无稳定产出。';
+}
+
+function openMemberDossier(id){
+  const m=getMember(id);if(!m)return;
+  dossierMemberId=m.id;$('memberDossierTitle').textContent=m.name;
+  const spouse=getMember(m.spouseId),parents=m.parentIds.map(pid=>getMember(pid)?.name).filter(Boolean).join('、');
+  const stats=[['learning','学问',m.learning],['management','治事',m.management],['business','经营',m.business],['martial','武艺',m.martial],['integrity','操守',m.integrity],['health','健康',m.health]];
+  $('memberDossierBody').innerHTML=`<div class="dossier-layout"><div class="portrait-stage">${portraitSvg(m,true)}<span>${esc(roleLabel(m))}</span></div><div class="dossier-copy"><div class="dossier-badges"><span class="badge red">第${m.generation}代</span><span class="badge">${esc(m.branch)}</span><span class="badge gold">${esc(m.exam)}</span><span class="badge jade">${esc(m.trait)}</span></div><p class="dossier-lead">${m.sex} · ${m.age}岁 · ${m.alive?'在籍':'已故'}${parents?`<br>父母：${esc(parents)}`:''}${spouse?`<br>婚配：${esc(spouse.name)}`:''}</p><div class="dossier-stats">${stats.map(([key,label,value])=>`<button onclick="openValueGuide('${key}',${m.id})"><span>${label}</span><b>${Math.floor(value)}</b><i style="width:${clamp(value,0,100)}%"></i></button>`).join('')}</div><section class="dossier-effect"><h3>此人现在能做什么</h3><p>${memberContribution(m)}</p></section><div class="dossier-actions"><button class="btn primary" onclick="closeMemberDossier();switchTab('members')">安排事务</button>${m.sex==='男'&&m.bornInFamily?`<button class="btn" onclick="closeMemberDossier();switchTab('career')">查看科举官途</button>`:''}${eligibleForMarriage(m)?`<button class="btn gold" onclick="closeMemberDossier();openMarriage(${m.id})">为其议亲</button>`:''}</div></div></div>`;
+  $('memberOverlay').classList.remove('hidden');
+}
+
+function closeMemberDossier(){$('memberOverlay').classList.add('hidden');dossierMemberId=null}
+
 function memberCard(m){
   const isHead=m.id===state.headId,isHeir=m.id===state.heirId,exam=nextExam(m);
   const canExam=exam&&examStatus(m)===`可应${exam.name}`;
@@ -1053,7 +1237,7 @@ function memberCard(m){
   if(eligibleForMarriage(m))actions.push(`<button class="btn small" onclick="openMarriage(${m.id})">为其议亲</button>`);
   if(m.bornInFamily&&m.resident&&m.age>=10&&!isHead&&!isHeir)actions.push(`<button class="btn small jade" onclick="setHeir(${m.id})">立为宗子</button>`);
   const parentNames=m.parentIds.map(id=>getMember(id)?.name).filter(Boolean).join('、');
-  return`<article class="member-card ${isHead?'head':''} ${m.officeRank?'official':''}"><div class="member-top"><div><div class="member-name">${esc(m.name)}</div><div class="member-meta">${m.sex} · ${m.age}岁 · 第${m.generation}代 · ${esc(m.branch)}${parentNames?`<br>父母：${esc(parentNames)}`:''}</div></div><div class="member-role">${esc(roleLabel(m))}<br><span class="muted">${m.officeRank?`${esc(m.officePlace)} · ${esc(m.officeTrack)}`:m.health<35?'抱病':m.health>80?'康健':'平安'}</span></div></div><div class="badges">${isHead?'<span class="badge red">掌门</span>':''}${isHeir?'<span class="badge gold">宗子</span>':''}<span class="badge">${esc(m.exam)}</span><span class="badge jade">${esc(m.trait)}</span>${m.spouseId?`<span class="badge">已婚 · ${esc(getMember(m.spouseId)?.name||'')}</span>`:''}${m.uxorilocal?'<span class="badge gold">招赘承嗣</span>':''}</div><div class="member-stats"><div class="member-stat"><b>${Math.floor(m.learning)}</b><span>学问</span></div><div class="member-stat"><b>${Math.floor(m.management)}</b><span>治事</span></div><div class="member-stat"><b>${Math.floor(m.business)}</b><span>经营</span></div><div class="member-stat"><b>${Math.floor(m.martial)}</b><span>武艺</span></div></div><div class="meter-row"><span>健康</span><div class="bar jade"><i style="width:${clamp(m.health,0,100)}%"></i></div><b>${Math.floor(m.health)}</b></div><div class="member-actions">${assignment}${actions.join('')}</div>${exam&&!canExam&&m.sex==='男'&&m.bornInFamily?`<div class="member-meta" style="margin-top:8px">科场：${esc(examStatus(m))}</div>`:''}</article>`;
+  return`<article class="member-card ${isHead?'head':''} ${m.officeRank?'official':''}"><button class="portrait-button member-portrait" onclick="openMemberDossier(${m.id})" aria-label="查看${esc(m.name)}人物卷宗">${portraitSvg(m)}</button><div class="member-card-body"><div class="member-top"><div><button class="member-name name-link" onclick="openMemberDossier(${m.id})">${esc(m.name)}</button><div class="member-meta">${m.sex} · ${m.age}岁 · 第${m.generation}代 · ${esc(m.branch)}${parentNames?`<br>父母：${esc(parentNames)}`:''}</div></div><div class="member-role">${esc(roleLabel(m))}<br><span class="muted">${m.officeRank?`${esc(m.officePlace)} · ${esc(m.officeTrack)}`:m.health<35?'抱病':m.health>80?'康健':'平安'}</span></div></div><div class="badges">${isHead?'<span class="badge red">掌门</span>':''}${isHeir?'<span class="badge gold">宗子</span>':''}<span class="badge">${esc(m.exam)}</span><span class="badge jade">${esc(m.trait)}</span>${m.spouseId?`<span class="badge">已婚 · ${esc(getMember(m.spouseId)?.name||'')}</span>`:''}${m.uxorilocal?'<span class="badge gold">招赘承嗣</span>':''}</div><div class="member-stats"><button class="member-stat" onclick="openValueGuide('learning',${m.id})"><b>${Math.floor(m.learning)}</b><span>学问</span></button><button class="member-stat" onclick="openValueGuide('management',${m.id})"><b>${Math.floor(m.management)}</b><span>治事</span></button><button class="member-stat" onclick="openValueGuide('business',${m.id})"><b>${Math.floor(m.business)}</b><span>经营</span></button><button class="member-stat" onclick="openValueGuide('martial',${m.id})"><b>${Math.floor(m.martial)}</b><span>武艺</span></button></div><button class="health-row" onclick="openValueGuide('health',${m.id})"><span>健康</span><span class="bar jade"><i style="width:${clamp(m.health,0,100)}%"></i></span><b>${Math.floor(m.health)}</b></button><p class="member-contribution">${memberContribution(m)}</p><div class="member-actions">${assignment}${actions.join('')}</div>${exam&&!canExam&&m.sex==='男'&&m.bornInFamily?`<div class="member-meta" style="margin-top:8px">科场：${esc(examStatus(m))}</div>`:''}</div></article>`;
 }
 
 function renderMembers(){
@@ -1124,8 +1308,8 @@ function renderAncestral(){
 }
 
 function valueMeters(){
-  const labels={learning:'家学',integrity:'清正',unity:'和族',enterprise:'营生',martial:'武备'};
-  return Object.entries(labels).map(([k,v])=>`<div class="meter-row"><span>${v}</span><div class="bar ${k==='unity'?'jade':k==='enterprise'?'gold':''}"><i style="width:${clamp(state.values[k],0,100)}%"></i></div><b>${Math.floor(clamp(state.values[k],0,100))}</b></div>`).join('');
+  const labels={learning:['家学','familyLearning'],integrity:['清正','integrity'],unity:['和族','unity'],enterprise:['营生','enterprise'],martial:['武备','familyMartial']};
+  return Object.entries(labels).map(([k,[label,guide]])=>`<button class="meter-row value-meter" onclick="openValueGuide('${guide}')"><span>${label}</span><span class="bar ${k==='unity'?'jade':k==='enterprise'?'gold':''}"><i style="width:${clamp(state.values[k],0,100)}%"></i></span><b>${Math.floor(clamp(state.values[k],0,100))}</b></button>`).join('');
 }
 
 function renderChronicle(){
@@ -1153,5 +1337,6 @@ function renderSide(){
 document.addEventListener('DOMContentLoaded',()=>{
   renderStartChoices();
   $('startButton').addEventListener('click',startGame);$('resumeButton').addEventListener('click',resumeGame);
-  document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{activeTab=tab.dataset.tab;renderAll()}));
+  document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>switchTab(tab.dataset.tab)));
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'){closeValueGuide();closeMemberDossier();closeMarriage()}});
 });
